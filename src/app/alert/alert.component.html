@@ -1,0 +1,9 @@
+<mat-card [ngClass]="['mt-2 mb-4', 'bg-' + variant]">
+    <mat-card-content class="flex items-start">
+        <mat-icon [fontIcon]="icon" class="me-2 overflow-visible" *ngIf="icon"></mat-icon>
+        <div>
+            <ng-content></ng-content>
+        </div>
+        <mat-icon fontIcon="close" class="alert-close-toggle ms-2 overflow-visible" *ngIf="closable" (click)="onCloseClicked()"></mat-icon>
+    </mat-card-content>
+</mat-card>

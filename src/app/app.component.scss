@@ -1,0 +1,10 @@
+mat-drawer-container {
+  min-height: calc(100vh - 64px);
+  mat-drawer {
+    width: 260px;
+  }
+}
+
+.spacer {
+  flex: 1;
+}

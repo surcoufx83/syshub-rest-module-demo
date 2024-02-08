@@ -1,0 +1,139 @@
+<not-logged-in-alert *ngIf="!loggedin; else loggedinCase"></not-logged-in-alert>
+
+<ng-template #loggedinCase>
+    <open-console-hint></open-console-hint>
+
+    <ng-container [ngTemplateOutlet]="BackupServer"></ng-container>
+    <ng-container [ngTemplateOutlet]="GetBackupInformation"></ng-container>
+    <ng-container [ngTemplateOutlet]="RestoreServer"></ng-container>
+
+</ng-template>
+
+<ng-template #BackupServer>
+    <app-card title="Backup des Servers ausführen" [busy]="testBackupBusy" [consoleOutput]="testBackupOutput"
+        [permission]="perminfo" (clickStartBtn)="onRunServerBackup()">
+        <p intro>
+            Dieser Funktionstest startet per <code>POST</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/backuprestore/backup</code> die Erstellung eines Backups (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Backup%2FRestore%20operations/doBackupRestoreUsingPOST'"
+                target="_blank">Dokumentation im Swagger UI</a>).
+        </p>
+        <form form [formGroup]="testBackupData">
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Backup Name</mat-label>
+                        <input matInput name="name" placeholder="Backup Name" formControlName="name" type="text"
+                            required>
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Beschreibungstext</mat-label>
+                        <input matInput name="description" placeholder="Beschreibungstext" formControlName="description"
+                            type="text">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Ordner innerhalb des sysHUB Root Verzeichnisses</mat-label>
+                        <input matInput name="folder" placeholder="backup/folder" formControlName="folder" type="text"
+                            required>
+                        <mat-hint><strong>Achtung:</strong> Existierende Backups mit dem gleichen Ordnernamen werden
+                            überschrieben.</mat-hint>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Zu sichernde Elemente</mat-label>
+                        <mat-select name="options" placeholder="Bitte wählen" formControlName="options" multiple
+                            required>
+                            <mat-option *ngFor="let item of enumOptions" [value]="item">{{item}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+    </app-card>
+</ng-template>
+
+<ng-template #GetBackupInformation>
+    <app-card title="Metainformationen zu Backup abrufen" [busy]="getBackMetaBusy" [consoleOutput]="getBackMetaOutput"
+        [permission]="permMetainfo" (clickStartBtn)="onGetBackupInfo()">
+        <p intro>
+            Dieser Funktionstest holt per <code>GET</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/backuprestore/metadata</code> Metainformationen zu einem zuvor erstellten Backup
+            vom sysHUB Server (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Backup%2FRestore%20operations/getBackupMetadataUsingGET'"
+                target="_blank">Dokumentation im Swagger UI</a>).
+        </p>
+        <form form [formGroup]="getBackMetaData">
+            <div class="row mb-3">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Backup Verzeichnis</mat-label>
+                        <input matInput name="folder" placeholder="backup/folder" formControlName="folder" type="text"
+                            required>
+                        <mat-hint *ngIf="this.testBackupData.controls['folder'].value != ''">Zum Übernehmen aus
+                            Abschnitt Backup ausführen <span class="fake-link" (click)="copyFolderToGetMeta()">hier
+                                klicken</span>.</mat-hint>
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+    </app-card>
+</ng-template>
+
+<ng-template #RestoreServer>
+    <app-card title="Backup wiederherstellen (Restore)" [busy]="restoreBusy" [consoleOutput]="restoreOutput"
+        [permission]="perminfo" (clickStartBtn)="onPrepareRestoreDialog()">
+        <p intro>
+            Dieser Funktionstest stellt per <code>POST</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/backuprestore/restore</code> ein vorheriges Backup wiederher (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Backup%2FRestore%20operations/doBackupRestoreUsingPOST'"
+                target="_blank">Dokumentation im Swagger UI</a>).
+        </p>
+        <form form [formGroup]="restoreData">
+            <div class="row mb-3">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Backup Verzeichnis</mat-label>
+                        <input matInput name="folder" placeholder="backup/folder" formControlName="folder" type="text"
+                            required>
+                        <mat-hint
+                            *ngIf="this.getBackMetaData.controls['folder'].value != '' || this.testBackupData.controls['folder'].value != ''">Zum
+                            Übernehmen aus
+                            Abschnitt Backup ausführen <span class="fake-link" (click)="copyFolderToRestore()">hier
+                                klicken</span>.</mat-hint>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Wiederherzustellende Elemente</mat-label>
+                        <mat-select name="options" placeholder="Bitte wählen" formControlName="options" multiple
+                            required>
+                            <mat-option *ngFor="let item of enumOptions" [value]="item">{{item}}</mat-option>
+                        </mat-select>
+                        <mat-hint *ngIf="getBackupMeta">Zum Übernehmen aus den Metainformationen <span class="fake-link"
+                                (click)="copyOptionsFromMeta()">hier klicken</span>.</mat-hint>
+                        <mat-hint *ngIf="!getBackupMeta">Zum Übernehmen aus Abschnitt Backup ausführen <span
+                                class="fake-link" (click)="copyOptionsFromBackup()">hier klicken</span>.</mat-hint>
+                    </mat-form-field>
+                    <div class="mb-2 px-3 col-warn"><strong>Achtung:</strong> Es dürfen nur Einträge gewählt werden,
+                        die auch beim
+                        Backup erstellen markiert waren. Werden weitere Elemente gewählt so wird die
+                        Wiederherstellung gestartet und bricht spätestens bei dem zuviel gewählten Element
+                        mit Fehlerstatus 404/Not found ab. Die bis dahin bearbeiteten Elemente sind aber
+                        unwiederruflich
+                        wiederhergestellt.</div>
+                </div>
+            </div>
+        </form>
+    </app-card>
+</ng-template>

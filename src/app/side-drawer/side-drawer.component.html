@@ -1,0 +1,13 @@
+<div class="drawer-item pb-3 fs-8">
+    <mat-icon fontIcon="key" class="fs-20"></mat-icon>
+    <span *ngIf="loggedin">Angemeldet</span>
+    <span *ngIf="!loggedin">Nicht angemeldet</span>
+</div>
+
+<mat-list role="navigation">
+    <a mat-list-item role="listitem" class="mat-mdc-list-item-interactive p-0" *ngFor="let item of draweritems"
+        [routerLink]="item.route" [activated]="item.route.join('/') == activeRoute">
+        <mat-icon [fontIcon]="item.icon"></mat-icon>
+        {{ item.title }}
+    </a>
+</mat-list>

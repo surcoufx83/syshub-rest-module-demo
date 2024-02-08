@@ -1,0 +1,18 @@
+<p>
+    Erforderliche Berechtigung: <i>{{title}}</i><br /> Diese Berechtigung ist
+    standardmäßig verfügbar in folgenden Berechtigungssets und Rollen:
+</p>
+<div class="flex">
+    <div class="grow">
+        <strong>Berechtigungssets</strong>
+        <ul>
+            <li *ngFor="let set of permissionSets">{{set}}</li>
+        </ul>
+    </div>
+    <div class="grow">
+        <strong>Rollen</strong>
+        <ul>
+            <li *ngFor="let role of roles">{{role}}</li>
+        </ul>
+    </div>
+</div>

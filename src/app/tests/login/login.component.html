@@ -1,0 +1,105 @@
+<app-h2 title="Login">
+    Abhängig der Konfiguration in der aktiven <code>{{ env.variant }}</code> stehen für den Login entweder
+    Basic oder OAuth zur Verfügung. Ist beides zeitgleich aktiviert, wird das Laden der Seite abgebrochen und ein Fehler
+    in der Browserkonsole angezeigt.
+</app-h2>
+
+<open-console-hint></open-console-hint>
+
+<mat-card class="mt-2 mb-4">
+    <mat-card-header>
+        <mat-card-title>
+            Basic Authentifizierung
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content *ngIf="!env.syshub.basic?.enabled">
+        Basic Authentifizierung ist deaktiviert in der {{env.variant}}
+    </mat-card-content>
+    <mat-card-content *ngIf="env.syshub.basic?.enabled">
+        <p>
+            Dieser Funktionstest für den Login bei Basic-Authentifizierung sendet eine <code>GET</code>-Anfrage an den
+            Endpoint <code>/currentUser</code> (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/User%20operations/getUsingGET'"
+                target="_blank">Dokumentation im Swagger UI</a>). Der Fehlerfall bedeutet, dass entweder die
+            Zugangsdaten in der <code>{{ env.variant }}</code> nicht korrekt sind oder der API-Server nicht korrekt
+            konfiguriert ist.
+        </p>
+        <app-permissions [title]="perm.title" [permissionSets]="perm.permissionsets" [roles]="perm.roles" />
+    </mat-card-content>
+    <mat-card-actions *ngIf="env.syshub.basic?.enabled">
+        <button mat-raised-button color="primary" [disabled]="basicLoginTestBusy" (click)="onTestBasicLogin()">
+            <div class="flex items-center nowrap">
+                <mat-spinner class="spinner-16 me-2" *ngIf="basicLoginTestBusy"></mat-spinner>
+                {{ basicLoginTestBusy ? 'Test läuft...' : 'Basic testen' }}
+            </div>
+        </button>
+    </mat-card-actions>
+    <mat-card-content class="terminal mt-4 p-3" *ngIf="env.syshub.basic?.enabled && basicLoginTestOutput != ''">
+        <pre class="m-0" [textContent]="basicLoginTestOutput"></pre>
+    </mat-card-content>
+</mat-card>
+
+<form>
+    <mat-card class="mt-2 mb-4">
+        <mat-card-header>
+            <mat-card-title>
+                OAuth2 Authentifizierung
+            </mat-card-title>
+        </mat-card-header>
+        <mat-card-content *ngIf="!env.syshub.oauth?.enabled">
+            OAuth2 Authentifizierung ist deaktiviert in der {{env.variant}}
+        </mat-card-content>
+        <mat-card-content *ngIf="env.syshub.oauth?.enabled">
+            <p>
+                Dieser Funktionstest für den Login bei OAuth2-Authentifizierung sendet eine <code>POST</code>-Anfrage an
+                den
+                Endpoint <code>/webauth/oauth/token</code>. Der Fehlerfall bedeutet, dass entweder die Zugangsdaten in
+                der
+                <code>{{ env.variant }}</code> nicht korrekt sind oder der Authorization-Server nicht korrekt
+                konfiguriert
+                ist.
+            </p>
+            <p>
+                Erforderliche Berechtigung: <i>Keine</i><br />
+                Der Login erfordert ein aktives Benutzerkonto.
+            </p>
+        </mat-card-content>
+        <mat-card-content *ngIf="env.syshub.oauth?.enabled" class="mt-2">
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>sysHUB Benutzername</mat-label>
+                        <input matInput name="username" placeholder="username" [(ngModel)]="oauthUsername"
+                            autocomplete="username" required>
+                    </mat-form-field>
+                </div>
+                <div class="col px-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Passwort</mat-label>
+                        <input matInput type="password" name="password" placeholder="password"
+                            [(ngModel)]="oauthPassword" autocomplete="current-password" required>
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2"></div>
+            </div>
+        </mat-card-content>
+        <mat-card-actions *ngIf="env.syshub.oauth?.enabled">
+            <button mat-raised-button color="primary" type="submit" [disabled]="oauthLoginTestBusy || oauthLoggedin"
+                (click)="onTestOauthLogin()">
+                <div class="flex items-center nowrap">
+                    <mat-spinner class="spinner-16 me-2" *ngIf="oauthLoginTestBusy"></mat-spinner>
+                    {{ oauthLoginTestBusy ? 'Login läuft...' : 'Anmelden' }}
+                </div>
+            </button>
+            <button mat-raised-button class="ms-2" color="primary" [disabled]="oauthLoginTestBusy || !oauthLoggedin"
+                (click)="onOauthLogout()">
+                <div class="flex items-center nowrap">
+                    Logout
+                </div>
+            </button>
+        </mat-card-actions>
+        <mat-card-content class="terminal mt-4 p-3" *ngIf="env.syshub.oauth?.enabled && oauthLoginTestOutput != ''">
+            <pre class="m-0" [textContent]="oauthLoginTestOutput"></pre>
+        </mat-card-content>
+    </mat-card>
+</form>

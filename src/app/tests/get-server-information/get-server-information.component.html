@@ -1,0 +1,34 @@
+<not-logged-in-alert *ngIf="!loggedin; else loggedinCase"></not-logged-in-alert>
+
+<ng-template #loggedinCase>
+    <open-console-hint></open-console-hint>
+
+    <ng-container [ngTemplateOutlet]="GetServerInfo"></ng-container>
+    <ng-container [ngTemplateOutlet]="GetServerProperties"></ng-container>
+
+</ng-template>
+
+<ng-template #GetServerInfo>
+    <app-card title="Serverinformationen abrufen" [busy]="testServerInfoBusy" [consoleOutput]="testServerInfoOutput"
+        [permission]="perminfo" (clickStartBtn)="onRunTestGetServerInfo()">
+        <p intro>
+            Dieser Funktionstest ruft per <code>GET</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/server/list/information</code> Statusinformationen vom sysHUB Server ab (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Server%20operations/listInformationUsingGET'"
+                target="_blank">Dokumentation im Swagger UI</a>).
+        </p>
+    </app-card>
+</ng-template>
+
+<ng-template #GetServerProperties>
+    <app-card title="Serverproperties abrufen" [busy]="testServerPropsBusy" [consoleOutput]="testServerPropsOutput"
+        [permission]="permProps" (clickStartBtn)="onRunTestGetServerProperties()">
+        <p intro>
+            Dieser Funktionstest ruft per <code>GET</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/server/properties</code> die Einstellungen aus der <code>server.properties</code> des
+            sysHUB Server ab (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Server%20operations/getServerPropertiesUsingGET'"
+                target="_blank">Dokumentation im Swagger UI</a>).
+        </p>
+    </app-card>
+</ng-template>

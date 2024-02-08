@@ -1,0 +1,29 @@
+<mat-card class="mt-2 mb-4">
+    <mat-card-header>
+        <mat-card-title>
+            {{title}}
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <ng-content select="[intro]"></ng-content>
+        <app-permissions *ngIf="permission" [title]="permission.title" [permissionSets]="permission.permissionsets"
+            [roles]="permission.roles" />
+    </mat-card-content>
+    <mat-card-content>
+        <ng-content select="[form]"></ng-content>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-raised-button color="primary" [disabled]="busy" (click)="onClickButton()">
+            <div class="flex items-center nowrap">
+                <mat-spinner class="spinner-16 me-2" *ngIf="busy"></mat-spinner>
+                {{ busy ? 'Läuft...' : 'Ausführen' }}
+            </div>
+        </button>
+        <div class="ms-3" *ngIf="resultMessage">
+            Ergebnis: {{ resultMessage }}
+        </div>
+    </mat-card-actions>
+    <mat-card-content class="terminal mt-4 p-3" *ngIf="consoleOutput != ''">
+        <pre class="m-0" [textContent]="consoleOutput"></pre>
+    </mat-card-content>
+</mat-card>

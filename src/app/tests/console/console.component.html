@@ -1,0 +1,90 @@
+<not-logged-in-alert *ngIf="!loggedin; else loggedinCase"></not-logged-in-alert>
+
+<ng-template #loggedinCase>
+    <open-console-hint></open-console-hint>
+
+    <ng-container [ngTemplateOutlet]="RunHelpCommand"></ng-container>
+
+    <ng-container [ngTemplateOutlet]="RunGenericCommand"></ng-container>
+    <ng-container [ngTemplateOutlet]="RunMemCommand"></ng-container>
+    <ng-container [ngTemplateOutlet]="RunPCommand"></ng-container>
+
+</ng-template>
+
+<ng-template #RunHelpCommand>
+    <app-card title="Mögliche Befehle auflisten (HELP)" [busy]="helpCmdBusy" [consoleOutput]="helpCmdOutput"
+        [resultMessage]="helpCmdResult" [permission]="perm" (clickStartBtn)="onRunHelpCmd()">
+        <p intro>
+            Dieser Funktionstest führt per <code>POST</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/server/consolecommands/execute/HELP</code> ein Konsolenkommando aus (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Console%20operations/postUsingPOST'"
+                target="_blank">Dokumentation im Swagger UI</a>). Die Ausführung startet synchron und die
+            Rückmeldung ist ein mehrzeiliger Text mit der Formattierung die für die Konsole normal aber für
+            Webanwendungen ungeeignet ist.
+        </p>
+    </app-card>
+</ng-template>
+
+<ng-template #RunGenericCommand>
+    <app-card title="Konsolenkommando ausführen" [busy]="genericCmdBusy" [consoleOutput]="genericCmdOutput"
+        [resultMessage]="genericCmdResult" [permission]="perm" (clickStartBtn)="onRunGenericCmd()">
+        <p intro>
+            Die Funktionalität ist identisch wie beim vorherigen HELP-Kommando nur dass hier das Kommando selbst
+            eingegeben werden kann. Es sind die gleichen Berechtigungen erforderlich wie beim vorgenannten
+            HELP-Kommando.<br />
+            <strong>Info: </strong> Wenn zuvor mindestens einmal das Kommando HELP ausgeführt wurde, stellt die
+            Eingabebox Kommando eine Auflistung der zur Verfügung stehenden Befehle bereit.
+        </p>
+        <form form [formGroup]="genericCmdData">
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Kommando</mat-label>
+                        <input matInput name="command" placeholder="HELP" formControlName="command" required
+                            [matAutocomplete]="auto" (change)="filter()" (keyup)="filter()">
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let option of genericCmdFilteredKeys" [value]="option">
+                                <strong>{{option}}</strong><ng-container
+                                    *ngIf="availableCommands && availableCommands[option]"> - {{
+                                    availableCommands[option] }}</ng-container>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2"></div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Argumente (bitte zeilenweise eingeben)</mat-label>
+                        <textarea class="code" matInput name="args" placeholder="" formControlName="args"></textarea>
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+    </app-card>
+</ng-template>
+
+<ng-template #RunMemCommand>
+    <app-card title="MEM - Speicherauslastung zeigen" [busy]="memCmdBusy" [consoleOutput]="memCmdOutput"
+        [resultMessage]="memCmdResult" (clickStartBtn)="onRunMemCmd()">
+        <p intro>
+            Führt das Kommando MEM aus. Funktioniert genauso, wie wenn im Bereich "Konsolenkommando ausführen" MEM
+            eingegeben wird, allerdings werden nicht die zeilenweisen Rohdaten geliefert sondern ein Objekt mit
+            Zahlenwerten die aus den Zeilen extrahiert wurden. Es sind die gleichen Berechtigungen erforderlich wie
+            beim vorgenannten HELP-Kommando.
+        </p>
+    </app-card>
+</ng-template>
+
+<ng-template #RunPCommand>
+    <app-card title="P - Aktive Workflowprozessoren auflisten" [busy]="pCmdBusy" [consoleOutput]="pCmdOutput"
+        [resultMessage]="pCmdResult" (clickStartBtn)="onRunPCmd()">
+        <p intro>
+            Führt das Kommando P aus. Funktioniert genauso, wie wenn im Bereich "Konsolenkommando ausführen" P
+            eingegeben wird, allerdings werden nicht die zeilenweisen Rohdaten geliefert sondern ein Objekt mit
+            Ausführungsinformationen die aus den Zeilen extrahiert wurden. Es sind die gleichen Berechtigungen
+            erforderlich wie beim vorgenannten HELP-Kommando.
+        </p>
+    </app-card>
+</ng-template>

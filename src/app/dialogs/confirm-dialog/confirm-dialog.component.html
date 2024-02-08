@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>{{dialogData.title}}</h1>
+<div mat-dialog-content>
+    <p>{{dialogData.description}}</p>
+</div>
+<div mat-dialog-actions class="flex justify-space-between">
+    <button mat-raised-button [color]="dialogData.button1Color"
+        [mat-dialog-close]="dialogData.button1Result">{{dialogData.button1}}</button>
+    <button mat-raised-button [color]="dialogData.button2Color" [mat-dialog-close]="dialogData.button2Result"
+        cdkFocusInitial>{{dialogData.button2}}</button>
+</div>

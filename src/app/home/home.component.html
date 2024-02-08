@@ -1,0 +1,96 @@
+<h2 style="margin-top: 0;">Demo App</h2>
+<p>
+    Diese Demo-App dient zum Testen des <a target="_blank" href="https://www.npmjs.com/package/syshub-rest-module">Rest
+        API Authentifizierungsmoduls für sysHUB</a>. Entweder muss das Modul aus npm installiert werden oder aber aus
+    einem Entwicklungs-Ordner verlinkt werden. Siehe mehr Infos in der Readme in diesem Repository.
+</p>
+<p>
+    Diese Demo-Seite stellt Testfälle bereit welche die das Auth-Modul implementiert. Für eine Dokumentation der
+    Endpoints im sysHUB bitte das <a [href]="env.syshub.host + 'webapi/swagger-ui.html'" target="_blank">Swagger UI</a>
+    nutzen.</p>
+<p>
+    Das Auth-Modul enthält auch die Methoden <code>delete()</code>, <code>patch()</code> und
+    <code>put()</code>, um alle Arten von HTTP-Methoden zu unterstützen, die die sysHUB Rest API verwenden
+    kann. Sie funktionieren genau wie <code>get()</code> und <code>post()</code>, daher werden
+    diese hier nicht mit extra Beispielen gezeigt.
+</p>
+
+<h3>Weitere Resourcen</h3>
+<ol>
+    <li>
+        <a target="_blank"
+            href="https://ntware.atlassian.net/wiki/spaces/SYSHUB2022/pages/11277174067/Adapter+REST-API">Dokumentation
+            REST API sysHUB 2022</a>
+    </li>
+    <li>
+        <a target="_blank"
+            href="https://ntware.atlassian.net/wiki/spaces/SYSHUB2023/pages/11395434987/Adapter+REST-API">Dokumentation
+            REST API sysHUB 2023</a>
+    </li>
+</ol>
+
+<h3>Voraussetzungen</h3>
+<p>
+    Damit die Tests dieser Seite funktionieren können, müssen folgende Voraussetzungen erfüllt sein:
+</p>
+<ol>
+    <li>
+        sysHUB Expertenkonfig
+        <ol>
+            <li>
+                Authorisierungs-Server (OAUTH)
+                <ol>
+                    <li>
+                        Erlaubte Origins: Entweder * oder die Hostname dieser Seite muss enthalten sein, ansonsten kommt
+                        es zu CORS-Fehlern.
+                    </li>
+                    <li>
+                        Clients: Ein eigener Client ist angelegt. Client Id und Client Secret müssen in diesem Projekt
+                        in die Dateien <code>src/environments/environment.ts</code> und
+                        <code>src/environments/environment.development.ts</code> eingetragen werden.
+                    </li>
+                </ol>
+            </li>
+            <li>
+                API-Server (Basic Auth)
+                <ol>
+                    <li>
+                        Erlaubte Origins: Entweder * oder die Hostname dieser Seite muss enthalten sein, ansonsten kommt
+                        es zu CORS-Fehlern.
+                    </li>
+                    <li>
+                        Authentication Provider: Ein eigener Provider ist angelegt. Provider, Benutzername und Passwort
+                        müssen in diesem Projekt in die Dateien <code>src/environments/environment.ts</code> und
+                        <code>src/environments/environment.development.ts</code> eingetragen werden. Bei diesem Provider
+                        muss die Checkbox Basic Auth aktiviert sein.
+                    </li>
+                </ol>
+            </li>
+            <li>
+                Scope: Sowohl bei OAUTH als auch Basic Auth kann ein Scope angegeben werden, das standardmäßig mit
+                <code>public</code> befüllt ist. Alternativ kann <code>private</code> oder <code>private;public</code>
+                angegeben werden. Im Swagger UI ist rechts oben ein Dropdown für
+                REST-API und REST-API internal. Letzteres enthält viele Endpoints die nur mit dem Scope private zur
+                Verfügung stehen. Ungültige Werte führen zu fehlendem Zugriff auf die REST API.
+            </li>
+        </ol>
+    </li>
+    <li>
+        sysHUB Benutzerverwaltung
+        <ol>
+            <li>
+                OAuth: Bei OAuth gibt der Benutzer seinen Benutzernamen und sein Passwort ein. Der Browser sendet diesen
+                zusammen mit Client Id und Passwort an den Server und erhält einen temporär gültigen Token. Dieser Token
+                wird mit jeder weiteren Anfrage gegen die Rest API mitgesendet.
+                Der Benutzer muss also angelegt und aktiv sein und muss alle Berechtigungen erhalten, welche gem.
+                Swagger für die aufzurufenden Endpoints erforderlich sind.
+            </li>
+            <li>
+                Basic: Bei der Basic Authentifizierung wird ein Benutername und ein Passwort mit jeder Rest API Anfrage
+                an den Server mitgesendet. Es ist kein dedizierter Login erforderlich.
+                Dieser Benutzer muss also angelegt und aktiv sein und muss alle Berechtigungen erhalten, welche gem.
+                Swagger für die aufzurufenden Endpoints erforderlich sind.
+            </li>
+        </ol>
+    </li>
+</ol>

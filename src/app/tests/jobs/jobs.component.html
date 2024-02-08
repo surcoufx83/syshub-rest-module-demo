@@ -1,0 +1,265 @@
+<not-logged-in-alert *ngIf="!loggedin; else loggedinCase"></not-logged-in-alert>
+
+<ng-template #loggedinCase>
+    <open-console-hint></open-console-hint>
+
+    <ng-container [ngTemplateOutlet]="runGetJobs"></ng-container>
+    <ng-container [ngTemplateOutlet]="createNewJob"></ng-container>
+    <ng-container [ngTemplateOutlet]="uploadFileToJob"></ng-container>
+
+</ng-template>
+
+<ng-template #createNewJob>
+    <app-card title="Job erzeugen" [busy]="addJobBusy" [consoleOutput]="addJobOutput" [resultMessage]="addJobResult"
+        [permission]="addPerm" (clickStartBtn)="onCreateJob()">
+        <p intro>
+            Dieser Funktionstest erstellt per <code>POST</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/jobs</code> einen neuen Job (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Job%20operations/postUsingPOST_5'"
+                target="_blank">Dokumentation im Swagger UI</a>).
+        </p>
+        <form form [formGroup]="addJobData">
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 50px; width: 100%;">
+                        <mat-label>Status</mat-label>
+                        <input matInput type="number" min="0" max="18" step="1" name="status" formControlName="status"
+                            [matAutocomplete]="jobstatusAutocomplete">
+                        <mat-autocomplete #jobstatusAutocomplete="matAutocomplete">
+                            <mat-option *ngFor="let option of jobstatuses" [value]="option.status">
+                                {{option.status}}: {{option.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 50px; width: 100%;">
+                        <mat-label>Parent Job Id</mat-label>
+                        <input matInput type="number" name="parentId" formControlName="parentId">
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2"></div>
+                <div class="col pe-2"></div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Textstatus</mat-label>
+                        <input matInput type="text" name="textStatus" formControlName="textStatus">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Titel</mat-label>
+                        <input matInput type="text" name="title" formControlName="title">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 50px; width: 100%;">
+                        <mat-label>Jobtype UUID</mat-label>
+                        <input matInput type="text" #jobTypeUuid name="jobTypeUuid" formControlName="jobTypeUuid"
+                            [matAutocomplete]="jobtypesAutocomplete" (keyup)="onJobtypeChanged(jobTypeUuid)">
+                        <mat-autocomplete #jobtypesAutocomplete="matAutocomplete"
+                            (optionSelected)="onJobtypeChanged(jobTypeUuid)">
+                            <mat-option *ngFor="let option of jobtypes" [value]="option.uuid">
+                                {{option.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Jobtype Name</mat-label>
+                        <input matInput type="text" #jobTypeName name="jobTypeName" [readonly]="jobtypes.length > 0"
+                            placeholder="" formControlName="jobTypeName">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>Mandant</mat-label>
+                        <input matInput type="text" name="client" formControlName="client">
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>Input channel</mat-label>
+                        <input matInput type="text" name="inputChannel" formControlName="inputChannel">
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>XID</mat-label>
+                        <input matInput type="text" name="xid" formControlName="xid">
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>Data type</mat-label>
+                        <input matInput type="text" name="dataType" formControlName="dataType">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>Custom field 1</mat-label>
+                        <input matInput type="text" name="customField" formControlName="customField">
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>Custom field 2</mat-label>
+                        <input matInput type="text" name="customField1" formControlName="customField1">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>Custom field 3</mat-label>
+                        <input matInput type="text" name="customField2" formControlName="customField2">
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>Custom field 4</mat-label>
+                        <input matInput type="text" name="customField3" formControlName="customField3">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>Custom field 5</mat-label>
+                        <input matInput type="text" name="customField4" formControlName="customField4">
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>Source file</mat-label>
+                        <input matInput type="text" name="sourceFile" formControlName="sourceFile">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>Ticket file</mat-label>
+                        <input matInput type="text" name="ticketFile" formControlName="ticketFile">
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2"></div>
+            </div>
+        </form>
+    </app-card>
+</ng-template>
+
+<ng-template #runGetJobs>
+    <app-card title="Jobs abrufen" [busy]="getJobsBusy" [consoleOutput]="getJobsOutput" [resultMessage]="getJobsResult"
+        [permission]="getPerm" (clickStartBtn)="onGetJobs()">
+        <p intro>
+            Dieser Funktionstest ruft per <code>GET</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/jobs</code> eine filterbare sortierbare Liste von Jobs vom Server ab (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Job%20operations/getUsingGET_7'"
+                target="_blank">Dokumentation im Swagger UI</a>). Die Ausführung startet synchron und zurück kommt
+            ein Array (eine Auflistung) von Job-Objekten.
+        </p>
+        <form form [formGroup]="getJobsData">
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Limit</mat-label>
+                        <input matInput type="number" min="1" step="1" name="limit" placeholder="Kein Limit"
+                            formControlName="limit">
+                        <mat-error *ngIf="getJobsData.errors?.['limitCount']">
+                            Muss gemeinsam mit Offset verwendet werden.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Offset</mat-label>
+                        <input matInput type="number" min="0" step="1" name="offset" formControlName="offset">
+                        <mat-error *ngIf="getJobsData.errors?.['limitCount']">
+                            Muss gemeinsam mit Limit verwendet werden.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Sortierung der Ergebnisse</mat-label>
+                        <input matInput type="text" name="orderby" placeholder="z.B. id.desc" formControlName="orderby">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>RSQL Filter</mat-label>
+                        <textarea class="code" matInput name="search" placeholder="z.B. textstatus==processed,status==6"
+                            formControlName="search"></textarea>
+                        <mat-hint>Mehr Informationen zu RSQL siehe <a target="_blank"
+                                href="https://github.com/jirutka/rsql-parser#grammar-and-semantic"
+                                title="RSQL Parser auf Github">RSQL
+                                Parser auf Github</a></mat-hint>
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+    </app-card>
+</ng-template>
+
+<ng-template #uploadFileToJob>
+    <app-card title="Datei zu Job hinzufügen" [busy]="addFileBusy" [consoleOutput]="addFileOutput"
+        [resultMessage]="addFilesResult" (clickStartBtn)="onUploadFile()">
+        <p intro class="mb-3">
+            Dieser Funktionstest lädt per <code>POST</code>-Anfrage eine Datei zum sysHUB Server hoch und fügt sie in
+            einem Job als Ticket oder Sourcefile an. Endpoint: <code>/webapi/v3/jobs/uploadFile</code> (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Job%20operations/uploadFileUsingPOST_15'"
+                target="_blank">Dokumentation im Swagger UI</a>).
+        </p>
+        <form form [formGroup]="addFileData">
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 50px; width: 100%;">
+                        <mat-label>Job Id</mat-label>
+                        <input matInput type="number" name="jobId" formControlName="jobId">
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 50px; width: 100%;">
+                        <mat-label>Status</mat-label>
+                        <input matInput name="filetype" formControlName="filetype"
+                            [matAutocomplete]="filetypeAutocomplete">
+                        <mat-autocomplete #filetypeAutocomplete="matAutocomplete">
+                            <mat-option value="source">source</mat-option>
+                            <mat-option value="ticket">ticket</mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2"></div>
+                <div class="col pe-2"></div>
+            </div>
+            <div class="row mb-3">
+                <div class="col flex row items-center">
+                    <div class="grow pe-2">
+                        <mat-form-field style="min-width: 50px; width: 100%;">
+                            <mat-label>Datei hochladen</mat-label>
+                            <input matInput name="filename" formControlName="filename">
+                        </mat-form-field>
+                    </div>
+                    <button type="button" mat-raised-button (click)="fileInput.click()">Datei wählen</button>
+                    <input hidden (change)="onFileSelected()" #fileInput type="file" id="fileUpload">
+                </div>
+            </div>
+        </form>
+    </app-card>
+</ng-template>

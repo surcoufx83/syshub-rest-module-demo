@@ -1,0 +1,146 @@
+<not-logged-in-alert *ngIf="!loggedin; else loggedinCase"></not-logged-in-alert>
+
+<ng-template #loggedinCase>
+    <open-console-hint></open-console-hint>
+
+    <ng-container [ngTemplateOutlet]="GetExecutingWorkflow"></ng-container>
+    <ng-container [ngTemplateOutlet]="PostExecuteWorkflow"></ng-container>
+    <ng-container [ngTemplateOutlet]="GetOneWorkflowExecution"></ng-container>
+    <ng-container [ngTemplateOutlet]="ExecuteAlias"></ng-container>
+
+</ng-template>
+
+<ng-template #GetExecutingWorkflow>
+    <app-card title="Aktuelle Workflowausführungen abrufen" [busy]="getExecutionsTestBusy"
+        [consoleOutput]="getExecutionsTestOutput" [resultMessage]="getExecutionsTestResult"
+        [permission]="getExecutionsperm" (clickStartBtn)="onRunGetExecutionsTest()">
+        <p intro>
+            Dieser Funktionstest ruft per <code>GET</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/server/workflows/execute</code> Informationen über laufende Workflowausführungen ab (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Workflow%20operations/getUsingGET_14'"
+                target="_blank">Dokumentation im Swagger UI</a>). Das betrifft allerdings nur Ausführungen, die
+            über den POST Endpoint <code>/webapi/v3/server/workflows/execute</code> gestartet wurden. Ein Workflow
+            der über den Client gestartet wurde und noch läuft wird über diesen Aufruf nicht gefunden.
+        </p>
+    </app-card>
+</ng-template>
+
+<ng-template #PostExecuteWorkflow>
+    <app-card title="Workflow ausführen" [busy]="postTestBusy" [consoleOutput]="postTestOutput"
+        [resultMessage]="postTestResult" [permission]="postperm" (clickStartBtn)="onRunPostExecutionsTest()">
+        <p intro>
+            Dieser Funktionstest startet per <code>POST</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/server/workflows/execute</code> die Ausführung eines Workflows (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Workflow%20operations/postUsingPOST_9'"
+                target="_blank">Dokumentation im Swagger UI</a>). Um den Worfklow zu starten muss dessen Uuid
+            angegeben werden. Optional kann eine Job Id angegeben werden. Die Ausführung nutzt keinen
+            Jobprozessor.
+        </p>
+        <form form [formGroup]="postData">
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Job Id (Ausführung des WF im Context eines Jobs)</mat-label>
+                        <input matInput name="jobId" placeholder="Job Id" formControlName="jobId" type="number">
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Workflow Uuid</mat-label>
+                        <input matInput name="workflowUuid" placeholder="Workflow Uuid" formControlName="workflowUuid"
+                            required>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col pe-2">
+                    <i>Wenn Job Id angegeben: Der Workflow wird im Context eines Jobs ausgeführt, d.h. im Workflow
+                        kann auf <code>currentjob</code> zugegriffen werden und das Joblog wird befüllt.</i>
+                </div>
+                <div class="col pe-2">
+                    <mat-slide-toggle color="primary" class="mb-2" formControlName="asyncSwitch">
+                        Asynchron ausführen
+                    </mat-slide-toggle>
+                    <br clear="all" />
+                    <i>Bei asynchroner Ausführung kommt sofort die Rückmeldung ob der Workflow gestartet wurde. Der
+                        Status kann über einen separaten Endpoint abgerufen werden (siehe nachfolgend:
+                        Status Workflowausführung abrufen).</i>
+                </div>
+            </div>
+        </form>
+    </app-card>
+</ng-template>
+
+<ng-template #GetOneWorkflowExecution>
+    <app-card title="Status einer Workflowausführung abrufen" [busy]="getExecutionTestBusy"
+        [consoleOutput]="getExecutionTestOutput" [resultMessage]="getExecutionTestResult"
+        [permission]="getExecutionperm" (clickStartBtn)="onRunGetExecutionTest()">
+        <p intro>
+            Dieser Funktionstest ruft per <code>GET</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/server/workflows/execute/...</code> Informationen über eine laufende
+            Workflowausführung ab (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Workflow%20operations/getUsingGET_15'"
+                target="_blank">Dokumentation im Swagger UI</a>). Das betrifft allerdings nur Ausführungen, die
+            über den POST Endpoint <code>/webapi/v3/server/workflows/execute</code> gestartet wurden und es muss
+            die uuid der Ausführung, nicht des Workflows angegeben werden.
+        </p>
+        <form form [formGroup]="getExecutionData">
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Ausführungs Uuid</mat-label>
+                        <input matInput name="uuid" placeholder="Uuid" formControlName="uuid" required>
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2"></div>
+            </div>
+        </form>
+    </app-card>
+</ng-template>
+
+<ng-template #ExecuteAlias>
+    <app-card title="Workflow mit Alias ausführen" [busy]="executeAliasTestBusy"
+        [consoleOutput]="executeAliasTestOutput" [permission]="postperm" (clickStartBtn)="onExecuteAliasTest()">
+        <p intro>
+            Dieser Funktionstest ruft per <code>GET</code>-Anfrage an den Endpoint
+            <code>/webapi/v3/server/workflows/execute?uuid=...</code> Informationen über eine laufende
+            Workflowausführung ab (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/Workflow%20operations/getUsingGET_15'"
+                target="_blank">Dokumentation im Swagger UI</a>). Das betrifft allerdings nur Ausführungen, die
+            über den POST Endpoint <code>/webapi/v3/server/workflows/execute</code> gestartet wurden und es muss
+            die uuid der Ausführung, nicht des Workflows angegeben werden.
+        </p>
+        <form form [formGroup]="executeAliasData">
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Workflow Alias</mat-label>
+                        <input matInput name="alias" placeholder="alias" formControlName="alias" required>
+                    </mat-form-field>
+                </div>
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Methode</mat-label>
+                        <mat-select name="method" placeholder="method" formControlName="method" required>
+                            <mat-option value="DELETE">DELETE</mat-option>
+                            <mat-option value="GET">GET</mat-option>
+                            <mat-option value="POST">POST</mat-option>
+                            <mat-option value="PUT">PUT</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Payload zum Senden an den Workflow</mat-label>
+                        <textarea class="code" matInput name="payload" placeholder="{ ... }" formControlName="payload"
+                            [readonly]="readonlyAliasPayload()"></textarea>
+                        <mat-hint>Die Daten (Payload) werden nur bei <code>POST</code> oder <code>PUT</code>
+                            gesendet und müssen einer gültigen JSON Struktur entsprechen.</mat-hint>
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+    </app-card>
+</ng-template>
