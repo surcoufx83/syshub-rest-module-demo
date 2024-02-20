@@ -12,10 +12,10 @@
             Basic Authentifizierung
         </mat-card-title>
     </mat-card-header>
-    <mat-card-content *ngIf="!env.syshub.basic?.enabled">
+    <mat-card-content *ngIf="!basicEnabled">
         Basic Authentifizierung ist deaktiviert in der {{env.variant}}
     </mat-card-content>
-    <mat-card-content *ngIf="env.syshub.basic?.enabled">
+    <mat-card-content *ngIf="basicEnabled">
         <p>
             Dieser Funktionstest für den Login bei Basic-Authentifizierung sendet eine <code>GET</code>-Anfrage an den
             Endpoint <code>/currentUser</code> (<a
@@ -26,7 +26,7 @@
         </p>
         <app-permissions [title]="perm.title" [permissionSets]="perm.permissionsets" [roles]="perm.roles" />
     </mat-card-content>
-    <mat-card-actions *ngIf="env.syshub.basic?.enabled">
+    <mat-card-actions *ngIf="basicEnabled">
         <button mat-raised-button color="primary" [disabled]="basicLoginTestBusy" (click)="onTestBasicLogin()">
             <div class="flex items-center nowrap">
                 <mat-spinner class="spinner-16 me-2" *ngIf="basicLoginTestBusy"></mat-spinner>
@@ -34,7 +34,7 @@
             </div>
         </button>
     </mat-card-actions>
-    <mat-card-content class="terminal mt-4 p-3" *ngIf="env.syshub.basic?.enabled && basicLoginTestOutput != ''">
+    <mat-card-content class="terminal mt-4 p-3" *ngIf="basicEnabled && basicLoginTestOutput != ''">
         <pre class="m-0" [textContent]="basicLoginTestOutput"></pre>
     </mat-card-content>
 </mat-card>
@@ -46,10 +46,10 @@
                 OAuth2 Authentifizierung
             </mat-card-title>
         </mat-card-header>
-        <mat-card-content *ngIf="!env.syshub.oauth?.enabled">
+        <mat-card-content *ngIf="basicEnabled">
             OAuth2 Authentifizierung ist deaktiviert in der {{env.variant}}
         </mat-card-content>
-        <mat-card-content *ngIf="env.syshub.oauth?.enabled">
+        <mat-card-content *ngIf="!basicEnabled">
             <p>
                 Dieser Funktionstest für den Login bei OAuth2-Authentifizierung sendet eine <code>POST</code>-Anfrage an
                 den
@@ -64,7 +64,7 @@
                 Der Login erfordert ein aktives Benutzerkonto.
             </p>
         </mat-card-content>
-        <mat-card-content *ngIf="env.syshub.oauth?.enabled" class="mt-2">
+        <mat-card-content *ngIf="!basicEnabled" class="mt-2">
             <div class="row">
                 <div class="col pe-2">
                     <mat-form-field style="min-width: 150px; width: 100%;">
@@ -83,7 +83,7 @@
                 <div class="col pe-2"></div>
             </div>
         </mat-card-content>
-        <mat-card-actions *ngIf="env.syshub.oauth?.enabled">
+        <mat-card-actions *ngIf="!basicEnabled">
             <button mat-raised-button color="primary" type="submit" [disabled]="oauthLoginTestBusy || oauthLoggedin"
                 (click)="onTestOauthLogin()">
                 <div class="flex items-center nowrap">
@@ -98,7 +98,7 @@
                 </div>
             </button>
         </mat-card-actions>
-        <mat-card-content class="terminal mt-4 p-3" *ngIf="env.syshub.oauth?.enabled && oauthLoginTestOutput != ''">
+        <mat-card-content class="terminal mt-4 p-3" *ngIf="!basicEnabled && oauthLoginTestOutput != ''">
             <pre class="m-0" [textContent]="oauthLoginTestOutput"></pre>
         </mat-card-content>
     </mat-card>

@@ -137,13 +137,11 @@ export class JobsComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    if (environment.syshub.basic?.enabled || (environment.syshub.oauth?.scope !== undefined && environment.syshub.oauth?.scope.indexOf('private') > -1)) {
-      this.restService.get('jobtype/list').subscribe((response) => {
-        if (response.status == HttpStatusCode.Ok) {
-          this.jobtypes = (<SyshubJobType[]>response.content['children']).sort((a, b) => a.name > b.name ? 1 : -1);
-        }
-      });
-    }
+    this.restService.get('jobtype/list').subscribe((response) => {
+      if (response.status == HttpStatusCode.Ok) {
+        this.jobtypes = (<SyshubJobType[]>response.content['children']).sort((a, b) => a.name > b.name ? 1 : -1);
+      }
+    });
     Object.values(SyshubJobStatus).filter((val) => !isNaN(Number(val))).forEach((val) => {
       this.jobstatuses.push({
         status: <number>val,

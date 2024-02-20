@@ -19,7 +19,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import { RestService, RestSettings, Settings, SyshubInterceptor } from 'syshub-rest-module';
+import { RestService, Settings, SyshubInterceptor } from 'syshub-rest-module';
 import { AlertComponent } from './alert/alert.component';
 import { NotLoggedInComponent } from './alert/not-logged-in/not-logged-in.component';
 import { OpenConsoleHintComponent } from './alert/open-console-hint/open-console-hint.component';
@@ -94,7 +94,7 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
   ],
   providers: [
-    { provide: Settings, multi: false, useValue: new Settings(<RestSettings>(environment.syshub)) },
+    { provide: Settings, multi: false, useValue: new Settings(environment.syshub) },
     { provide: RestService, multi: false, deps: [Settings, HttpClient] },
     { provide: HTTP_INTERCEPTORS, multi: true, useClass: SyshubInterceptor, deps: [Settings, RestService] },
     { provide: SharedDataService, multi: false },

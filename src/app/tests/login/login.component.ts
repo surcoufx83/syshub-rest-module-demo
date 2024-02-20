@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { PermissionsItem, permissions } from 'src/app/perm/permissions/permissions';
 import { environment } from 'src/environments/environment';
-import { RestService, StatusNotExpectedError } from 'syshub-rest-module';
+import { RestService, StatusNotExpectedError, BasicRestSettings, OAuthRestSettings } from 'syshub-rest-module';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +16,7 @@ export class LoginComponent implements OnDestroy {
   sub?: Subscription;
   perm: PermissionsItem = permissions['PERM_IADMINSERVICE_GETUSERDATABYNAME'];
 
+  basicEnabled = Object.keys(this.env.syshub).includes('basic');
   basicLoginTestBusy: boolean = false;
   basicLoginTestOutput: string = '';
 
@@ -38,7 +39,7 @@ export class LoginComponent implements OnDestroy {
       this.snackBar.open('Test läuft bereits, bitte warten.', 'OK');
       return;
     }
-    if (!this.env.syshub.basic?.enabled) {
+    if (!this.basicEnabled) {
       this.snackBar.open('Basic Authentifizierung ist nicht aktiviert in der ' + this.env.variant, 'OK');
       return;
     }
@@ -66,7 +67,7 @@ export class LoginComponent implements OnDestroy {
       this.snackBar.open('Test läuft bereits, bitte warten.', 'OK');
       return;
     }
-    if (!this.env.syshub.oauth?.enabled) {
+    if (this.basicEnabled) {
       this.snackBar.open('OAuth2 Authentifizierung ist nicht aktiviert in der ' + this.env.variant, 'OK');
       return;
     }
@@ -77,7 +78,7 @@ export class LoginComponent implements OnDestroy {
       if (response === null)
         this.oauthLoginTestOutput += `> Initialisiert\r\n`;
       else if (response === true) {
-        this.oauthLoginTestOutput += `> Erfolgreich eingeloggt:\r\n${JSON.stringify(JSON.parse(localStorage.getItem(this.env.syshub.oauth!.storeKey!)!), null, 2)}`;
+        this.oauthLoginTestOutput += `> Erfolgreich eingeloggt:\r\n${JSON.stringify(JSON.parse(localStorage.getItem((<OAuthRestSettings>this.env.syshub).oauth.storeKey!)!), null, 2)}`;
         this.oauthLoginTestBusy = false;
       }
       else {
