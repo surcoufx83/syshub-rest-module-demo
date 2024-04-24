@@ -80,7 +80,10 @@
                             [(ngModel)]="oauthPassword" autocomplete="current-password" required>
                     </mat-form-field>
                 </div>
-                <div class="col pe-2"></div>
+                <div class="col ps-2">
+                    <mat-checkbox name="keep-loggedin" [(ngModel)]="oauthKeepSession">Angemeldet
+                        bleiben?</mat-checkbox>
+                </div>
             </div>
         </mat-card-content>
         <mat-card-actions *ngIf="!basicEnabled">

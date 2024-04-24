@@ -25,6 +25,7 @@ export class LoginComponent implements OnDestroy {
   oauthLoginTestOutput: string = '';
   oauthUsername: string = '';
   oauthPassword: string = '';
+  oauthKeepSession: boolean = true;
 
   constructor(private restService: RestService, private snackBar: MatSnackBar) {
     this.sub = this.restService.isLoggedIn.subscribe((state) => this.oauthLoggedin = state);
@@ -74,11 +75,11 @@ export class LoginComponent implements OnDestroy {
     this.oauthLoginTestBusy = true;
     this.oauthLoginTestOutput = 'Starte OAuth2 Login\r\n';
     this.oauthLoginTestOutput += `> restService.login(${this.oauthUsername}, **********)\r\n`;
-    this.restService.login(this.oauthUsername, this.oauthPassword).subscribe((response) => {
+    this.restService.login(this.oauthUsername, this.oauthPassword, this.oauthKeepSession).subscribe((response) => {
       if (response === null)
         this.oauthLoginTestOutput += `> Initialisiert\r\n`;
       else if (response === true) {
-        this.oauthLoginTestOutput += `> Erfolgreich eingeloggt:\r\n${JSON.stringify(JSON.parse(localStorage.getItem((<OAuthRestSettings>this.env.syshub).oauth.storeKey!)!), null, 2)}`;
+        this.oauthLoginTestOutput += `> Erfolgreich eingeloggt:\r\n${JSON.stringify(JSON.parse(this.oauthKeepSession ? localStorage.getItem((<OAuthRestSettings>this.env.syshub).oauth.storeKey!)! : sessionStorage.getItem((<OAuthRestSettings>this.env.syshub).oauth.storeKey!)!), null, 2)}`;
         this.oauthLoginTestBusy = false;
       }
       else {
