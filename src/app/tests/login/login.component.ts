@@ -59,7 +59,7 @@ export class LoginComponent implements OnDestroy {
 
   onOauthLogout(): void {
     this.restService.logout();
-    location.reload();
+    // location.reload();
   }
 
   onTestOauthLogin(): void {
