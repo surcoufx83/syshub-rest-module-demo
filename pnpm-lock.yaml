@@ -48,8 +48,8 @@ importers:
         specifier: ~7.8.1
         version: 7.8.1
       syshub-rest-module:
-        specifier: ^5.0.2
-        version: 5.0.2(@angular/common@17.3.5(@angular/core@17.3.5(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@17.3.5(rxjs@7.8.1)(zone.js@0.14.4))
+        specifier: ^5.1.0
+        version: 5.1.0(@angular/common@17.3.5(@angular/core@17.3.5(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@17.3.5(rxjs@7.8.1)(zone.js@0.14.4))
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -3790,8 +3790,8 @@ packages:
     resolution: {integrity: sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==}
     engines: {node: '>=0.10'}
 
-  syshub-rest-module@5.0.2:
-    resolution: {integrity: sha512-xxfsD7EGKCkmZ5fwStZi+NnhVVMrjmCBgEWeX4tvUhJBpBKcFOyj9ffvH9r+7ctrSZA66zqXm9dTe6j588NNxQ==}
+  syshub-rest-module@5.1.0:
+    resolution: {integrity: sha512-uz339XSdxHp8Ya2OQsT6cxOEAG9sSO6HbZ2n5P4V49OQ4kYv7kNzzTEMAOPqLW49j34y1ecQItoKlFaGy7BnHQ==}
     peerDependencies:
       '@angular/common': ^17
       '@angular/core': ^17
@@ -8693,7 +8693,7 @@ snapshots:
 
   symbol-observable@4.0.0: {}
 
-  syshub-rest-module@5.0.2(@angular/common@17.3.5(@angular/core@17.3.5(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@17.3.5(rxjs@7.8.1)(zone.js@0.14.4)):
+  syshub-rest-module@5.1.0(@angular/common@17.3.5(@angular/core@17.3.5(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@17.3.5(rxjs@7.8.1)(zone.js@0.14.4)):
     dependencies:
       '@angular/common': 17.3.5(@angular/core@17.3.5(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1)
       '@angular/core': 17.3.5(rxjs@7.8.1)(zone.js@0.14.4)
