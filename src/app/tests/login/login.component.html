@@ -9,13 +9,21 @@
 <mat-card class="mt-2 mb-4">
     <mat-card-header>
         <mat-card-title>
-            Basic Authentifizierung
+            Basic Authentifizierung (hardcoded credentials in {{env.variant}})
         </mat-card-title>
     </mat-card-header>
-    <mat-card-content *ngIf="!basicEnabled">
+    @if (!basicEnabled) {
+    <mat-card-content>
         Basic Authentifizierung ist deaktiviert in der {{env.variant}}
     </mat-card-content>
-    <mat-card-content *ngIf="basicEnabled">
+    }
+    @else if (basicEnabled && basicLoginRequired) {
+    <mat-card-content>
+        Basic Authentifizierung erfordert Benutzereingabe (siehe nächster Block)
+    </mat-card-content>
+    }
+    @else {
+    <mat-card-content>
         <p>
             Dieser Funktionstest für den Login bei Basic-Authentifizierung sendet eine <code>GET</code>-Anfrage an den
             Endpoint <code>/currentUser</code> (<a
@@ -26,7 +34,7 @@
         </p>
         <app-permissions [title]="perm.title" [permissionSets]="perm.permissionsets" [roles]="perm.roles" />
     </mat-card-content>
-    <mat-card-actions *ngIf="basicEnabled">
+    <mat-card-actions>
         <button mat-raised-button color="primary" [disabled]="basicLoginTestBusy" (click)="onTestBasicLogin()">
             <div class="flex items-center nowrap">
                 <mat-spinner class="spinner-16 me-2" *ngIf="basicLoginTestBusy"></mat-spinner>
@@ -34,10 +42,92 @@
             </div>
         </button>
     </mat-card-actions>
-    <mat-card-content class="terminal mt-4 p-3" *ngIf="basicEnabled && basicLoginTestOutput != ''">
+    @if (basicLoginTestOutput != '') {
+    <mat-card-content class="terminal mt-4 p-3">
         <pre class="m-0" [textContent]="basicLoginTestOutput"></pre>
     </mat-card-content>
+    }
+    }
 </mat-card>
+
+<form>
+    <mat-card class="mt-2 mb-4">
+        <mat-card-header>
+            <mat-card-title>
+                Basic Authentifizierung mit Credentials
+            </mat-card-title>
+        </mat-card-header>
+        @if (!basicEnabled) {
+        <mat-card-content>
+            Basic Authentifizierung ist deaktiviert in der {{env.variant}}
+        </mat-card-content>
+        }
+        @else if (basicEnabled && !basicLoginRequired) {
+        <mat-card-content>
+            Basic Authentifizierung erfordert keine Benutzereingabe da bereits in der {{env.variant}} definiert.
+        </mat-card-content>
+        }
+        @else {
+        <mat-card-content>
+            <p>
+                Dieser Funktionstest für den Login bei Basic-Authentifizierung aus, indem die Zugangsdaten verwendet
+                werden
+                um eine <code>GET</code>-Anfrage an den Endpoint <code>/currentUser</code> (<a
+                    [href]="env.syshub.host + 'webapi/swagger-ui.html#/User%20operations/getUsingGET'"
+                    target="_blank">Dokumentation im Swagger UI</a>) zu senden. Der Fehlerfall bedeutet, dass entweder
+                die
+                Zugangsdaten nicht korrekt sind oder der API-Server nicht korrekt
+                konfiguriert ist.
+            </p>
+            <app-permissions [title]="perm.title" [permissionSets]="perm.permissionsets" [roles]="perm.roles" />
+        </mat-card-content>
+        <mat-card-content>
+            <div class="row">
+                <div class="col pe-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>sysHUB Benutzername</mat-label>
+                        <input matInput name="username" placeholder="username" [(ngModel)]="basicUsername"
+                            autocomplete="username" required>
+                    </mat-form-field>
+                </div>
+                <div class="col px-2">
+                    <mat-form-field style="min-width: 150px; width: 100%;">
+                        <mat-label>Passwort</mat-label>
+                        <input matInput type="password" name="password" placeholder="password"
+                            [(ngModel)]="basicPassword" autocomplete="current-password" required>
+                    </mat-form-field>
+                </div>
+                <div class="col ps-2">
+                    <mat-checkbox name="keep-loggedin" [(ngModel)]="basicKeepSession">Angemeldet
+                        bleiben?</mat-checkbox>
+                </div>
+            </div>
+        </mat-card-content>
+        <mat-card-actions>
+            <button mat-raised-button color="primary" [disabled]="basicLoginTestBusy || oauthLoggedin"
+                (click)="onTestBasicLogin()">
+                <div class="flex items-center nowrap">
+                    @if(basicLoginTestBusy) {
+                    <mat-spinner class="spinner-16 me-2"></mat-spinner>
+                    }
+                    {{ basicLoginTestBusy ? 'Login läuft...' : 'Anmelden' }}
+                </div>
+            </button>
+            <button mat-raised-button class="ms-2" color="primary" [disabled]="basicLoginTestBusy || !oauthLoggedin"
+                (click)="onBasicLogout()">
+                <div class="flex items-center nowrap">
+                    Logout
+                </div>
+            </button>
+        </mat-card-actions>
+        @if (basicLoginTestOutput != '') {
+        <mat-card-content class="terminal mt-4 p-3">
+            <pre class="m-0" [textContent]="basicLoginTestOutput"></pre>
+        </mat-card-content>
+        }
+        }
+    </mat-card>
+</form>
 
 <form>
     <mat-card class="mt-2 mb-4">

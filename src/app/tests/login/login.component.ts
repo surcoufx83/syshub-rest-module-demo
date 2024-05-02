@@ -17,8 +17,12 @@ export class LoginComponent implements OnDestroy {
   perm: PermissionsItem = permissions['PERM_IADMINSERVICE_GETUSERDATABYNAME'];
 
   basicEnabled = Object.keys(this.env.syshub).includes('basic');
+  basicLoginRequired: boolean;
   basicLoginTestBusy: boolean = false;
   basicLoginTestOutput: string = '';
+  basicUsername: string = '';
+  basicPassword: string = '';
+  basicKeepSession: boolean = true;
 
   oauthLoggedin: boolean = false;
   oauthLoginTestBusy: boolean = false;
@@ -29,6 +33,10 @@ export class LoginComponent implements OnDestroy {
 
   constructor(private restService: RestService, private snackBar: MatSnackBar) {
     this.sub = this.restService.isLoggedIn.subscribe((state) => this.oauthLoggedin = state);
+    if (Object.keys(this.env.syshub).includes('basic'))
+      this.basicLoginRequired = (<BasicRestSettings>this.env.syshub).basic.requiresLogin == true;
+    else
+      this.basicLoginRequired = false;
   }
 
   ngOnDestroy(): void {
@@ -46,16 +54,39 @@ export class LoginComponent implements OnDestroy {
     }
     this.basicLoginTestBusy = true;
     this.basicLoginTestOutput = 'Starte Test Basic Login\r\n';
-    this.basicLoginTestOutput += `> restService.getCurrentUser()\r\n`;
-    this.restService.getCurrentUser().subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.basicLoginTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else {
-        this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-      }
-      this.basicLoginTestBusy = false;
-    });
+
+    if (this.basicLoginRequired) {
+      this.basicLoginTestOutput += `> restService.login(${this.basicUsername}, **********)\r\n`;
+      this.restService.login(this.basicUsername, this.basicPassword, this.basicKeepSession).subscribe((response) => {
+        if (response == null)
+          return;
+        if (response instanceof StatusNotExpectedError) {
+          this.basicLoginTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else {
+          this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+        }
+        this.basicLoginTestBusy = false;
+      });
+    }
+    else {
+      this.basicLoginTestOutput += `> restService.getCurrentUser()\r\n`;
+      this.restService.getCurrentUser().subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.basicLoginTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else {
+          this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+        }
+        this.basicLoginTestBusy = false;
+      });
+    }
+
+  }
+
+  onBasicLogout(): void {
+    this.restService.logout();
+    // location.reload();
   }
 
   onOauthLogout(): void {
