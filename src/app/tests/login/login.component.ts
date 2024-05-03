@@ -16,6 +16,10 @@ export class LoginComponent implements OnDestroy {
   sub?: Subscription;
   perm: PermissionsItem = permissions['PERM_IADMINSERVICE_GETUSERDATABYNAME'];
 
+  apikeyEnabled = Object.keys(this.env.syshub).includes('apiKey');
+  apikeyTestBusy: boolean = false;
+  apikeyTestOutput: string = '';
+
   basicEnabled = Object.keys(this.env.syshub).includes('basic');
   basicLoginRequired: boolean;
   basicLoginTestBusy: boolean = false;
@@ -24,6 +28,7 @@ export class LoginComponent implements OnDestroy {
   basicPassword: string = '';
   basicKeepSession: boolean = true;
 
+  oauthEnabled = Object.keys(this.env.syshub).includes('oauth');
   oauthLoggedin: boolean = false;
   oauthLoginTestBusy: boolean = false;
   oauthLoginTestOutput: string = '';
@@ -41,6 +46,30 @@ export class LoginComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
+  }
+
+  onTestApiKey(): void {
+    if (this.apikeyTestBusy) {
+      this.snackBar.open('Test läuft bereits, bitte warten.', 'OK');
+      return;
+    }
+    if (!this.apikeyEnabled) {
+      this.snackBar.open('API Key Authentifizierung ist nicht aktiviert in der ' + this.env.variant, 'OK');
+      return;
+    }
+    this.apikeyTestBusy = true;
+    this.apikeyTestOutput = 'Starte Test Basic Login\r\n';
+    this.apikeyTestOutput += `> restService.getCurrentUser()\r\n`;
+    this.restService.getCurrentUser(true).subscribe((response) => {
+      if (response instanceof StatusNotExpectedError) {
+        this.apikeyTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+        this.apikeyTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else {
+        this.apikeyTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+      }
+      this.apikeyTestBusy = false;
+    });
+
   }
 
   onTestBasicLogin(): void {
@@ -71,7 +100,7 @@ export class LoginComponent implements OnDestroy {
     }
     else {
       this.basicLoginTestOutput += `> restService.getCurrentUser()\r\n`;
-      this.restService.getCurrentUser().subscribe((response) => {
+      this.restService.getCurrentUser(true).subscribe((response) => {
         if (response instanceof StatusNotExpectedError) {
           this.basicLoginTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
           this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
@@ -99,7 +128,7 @@ export class LoginComponent implements OnDestroy {
       this.snackBar.open('Test läuft bereits, bitte warten.', 'OK');
       return;
     }
-    if (this.basicEnabled) {
+    if (!this.oauthEnabled) {
       this.snackBar.open('OAuth2 Authentifizierung ist nicht aktiviert in der ' + this.env.variant, 'OK');
       return;
     }

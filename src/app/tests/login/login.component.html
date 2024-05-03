@@ -136,10 +136,10 @@
                 OAuth2 Authentifizierung
             </mat-card-title>
         </mat-card-header>
-        <mat-card-content *ngIf="basicEnabled">
+        <mat-card-content *ngIf="!oauthEnabled">
             OAuth2 Authentifizierung ist deaktiviert in der {{env.variant}}
         </mat-card-content>
-        <mat-card-content *ngIf="!basicEnabled">
+        <mat-card-content *ngIf="oauthEnabled">
             <p>
                 Dieser Funktionstest für den Login bei OAuth2-Authentifizierung sendet eine <code>POST</code>-Anfrage an
                 den
@@ -154,7 +154,7 @@
                 Der Login erfordert ein aktives Benutzerkonto.
             </p>
         </mat-card-content>
-        <mat-card-content *ngIf="!basicEnabled" class="mt-2">
+        <mat-card-content *ngIf="oauthEnabled" class="mt-2">
             <div class="row">
                 <div class="col pe-2">
                     <mat-form-field style="min-width: 150px; width: 100%;">
@@ -176,7 +176,7 @@
                 </div>
             </div>
         </mat-card-content>
-        <mat-card-actions *ngIf="!basicEnabled">
+        <mat-card-actions *ngIf="oauthEnabled">
             <button mat-raised-button color="primary" type="submit" [disabled]="oauthLoginTestBusy || oauthLoggedin"
                 (click)="onTestOauthLogin()">
                 <div class="flex items-center nowrap">
@@ -191,8 +191,47 @@
                 </div>
             </button>
         </mat-card-actions>
-        <mat-card-content class="terminal mt-4 p-3" *ngIf="!basicEnabled && oauthLoginTestOutput != ''">
+        <mat-card-content class="terminal mt-4 p-3" *ngIf="oauthEnabled && oauthLoginTestOutput != ''">
             <pre class="m-0" [textContent]="oauthLoginTestOutput"></pre>
         </mat-card-content>
     </mat-card>
 </form>
+
+<mat-card class="mt-2 mb-4">
+    <mat-card-header>
+        <mat-card-title>
+            API Key Authentifizierung (hardcoded credentials in {{env.variant}})
+        </mat-card-title>
+    </mat-card-header>
+    @if (!apikeyEnabled) {
+    <mat-card-content>
+        Basic Authentifizierung ist deaktiviert in der {{env.variant}}
+    </mat-card-content>
+    }
+    @else {
+    <mat-card-content>
+        <p>
+            Dieser Funktionstest für den Login bei API Key-Authentifizierung sendet eine <code>GET</code>-Anfrage an den
+            Endpoint <code>/currentUser</code> (<a
+                [href]="env.syshub.host + 'webapi/swagger-ui.html#/User%20operations/getUsingGET'"
+                target="_blank">Dokumentation im Swagger UI</a>). Der Fehlerfall bedeutet, dass entweder die
+            Zugangsdaten in der <code>{{ env.variant }}</code> nicht korrekt sind oder der API-Server nicht korrekt
+            konfiguriert ist.
+        </p>
+        <app-permissions [title]="perm.title" [permissionSets]="perm.permissionsets" [roles]="perm.roles" />
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-raised-button color="primary" [disabled]="apikeyTestBusy" (click)="onTestApiKey()">
+            <div class="flex items-center nowrap">
+                <mat-spinner class="spinner-16 me-2" *ngIf="apikeyTestBusy"></mat-spinner>
+                {{ apikeyTestBusy ? 'Test läuft...' : 'API-Key testen' }}
+            </div>
+        </button>
+    </mat-card-actions>
+    @if (apikeyTestOutput != '') {
+    <mat-card-content class="terminal mt-4 p-3">
+        <pre class="m-0" [textContent]="apikeyTestOutput"></pre>
+    </mat-card-content>
+    }
+    }
+</mat-card>
