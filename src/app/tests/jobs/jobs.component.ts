@@ -170,19 +170,25 @@ export class JobsComponent implements OnDestroy, OnInit {
     this.addJobOutput = 'Bitte warten...'
     this.addJobOutput = 'Starte Test\r\n';
     this.addJobOutput += `> restService.createJob(${JSON.stringify(job)})\r\n`;
-    this.restService.createJob(job).subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.addJobOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.addJobOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.addJobOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.addJobOutput += `Header:\r\n${JSON.stringify((<JobResponse>response).header, null, 2)}\r\n`;
-        this.addJobOutput += `Antwort:\r\n${JSON.stringify((<JobResponse>response).content, null, 2)}\r\n`;
-        this.addJobResult = `Der Job wurde mit Id ${(<JobResponse>response).content.id} angelegt.`;
-      }
+    try {
+      this.restService.createJob(job).subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.addJobOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.addJobOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.addJobOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.addJobOutput += `Header:\r\n${JSON.stringify((<JobResponse>response).header, null, 2)}\r\n`;
+          this.addJobOutput += `Antwort:\r\n${JSON.stringify((<JobResponse>response).content, null, 2)}\r\n`;
+          this.addJobResult = `Der Job wurde mit Id ${(<JobResponse>response).content.id} angelegt.`;
+        }
+        this.addJobBusy = false;
+      });
+    } catch (error) {
+      this.addJobOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.addJobBusy = false;
-    });
+    }
+
   }
 
   onFileSelected(): void {
@@ -224,19 +230,25 @@ export class JobsComponent implements OnDestroy, OnInit {
     this.getJobsOutput = 'Bitte warten...'
     this.getJobsOutput = 'Starte Test\r\n';
     this.getJobsOutput += `> restService.getJobs(${JSON.stringify(params)})\r\n`;
-    this.restService.getJobs(params).subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.getJobsOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.getJobsOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.getJobsOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.getJobsOutput += `Header:\r\n${JSON.stringify((<JobsResponse>response).header, null, 2)}\r\n`;
-        this.getJobsOutput += `Antwort:\r\n${JSON.stringify((<JobsResponse>response).content, null, 2)}\r\n`;
-        this.getJobsResult = `Es wurden ${(<JobsResponse>response).content.length} Jobs gefunden die den Kriterien entsprechen.`;
-      }
+    try {
+      this.restService.getJobs(params).subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.getJobsOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.getJobsOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.getJobsOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.getJobsOutput += `Header:\r\n${JSON.stringify((<JobsResponse>response).header, null, 2)}\r\n`;
+          this.getJobsOutput += `Antwort:\r\n${JSON.stringify((<JobsResponse>response).content, null, 2)}\r\n`;
+          this.getJobsResult = `Es wurden ${(<JobsResponse>response).content.length} Jobs gefunden die den Kriterien entsprechen.`;
+        }
+        this.getJobsBusy = false;
+      });
+    } catch (error) {
+      this.getJobsOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.getJobsBusy = false;
-    });
+    }
+
   }
 
   onJobtypeChanged(uuidfield: HTMLInputElement) {
@@ -272,22 +284,28 @@ export class JobsComponent implements OnDestroy, OnInit {
     this.addFileOutput = 'Bitte warten...'
     this.addFileOutput = 'Starte Test\r\n';
     this.addFileOutput += `> restService.uploadFileToJob(${this.addFileData.controls.jobId.value}, ${this.addFileData.controls.filetype.value}, ..., ${this.addFileData.controls.filename.value})\r\n`;
-    this.restService.uploadFileToJob(
-      this.addFileData.controls.jobId.value!,
-      this.addFileData.controls.filetype.value!,
-      this.addFileData.controls.file.value!,
-      this.addFileData.controls.filename.value!
-    ).subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.addFileOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.addFileOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.addFileOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.addFileOutput += `Datei wurde hochgeladen.`;
-      }
+    try {
+      this.restService.uploadFileToJob(
+        this.addFileData.controls.jobId.value!,
+        this.addFileData.controls.filetype.value!,
+        this.addFileData.controls.file.value!,
+        this.addFileData.controls.filename.value!
+      ).subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.addFileOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.addFileOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.addFileOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.addFileOutput += `Datei wurde hochgeladen.`;
+        }
+        this.addFileBusy = false;
+      });
+    } catch (error) {
+      this.addFileOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.addFileBusy = false;
-    });
+    }
+
   }
 
 }

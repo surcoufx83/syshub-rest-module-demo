@@ -95,10 +95,16 @@ export class WorkflowExecutionsComponent implements OnDestroy {
     this.executeAliasTestBusy = true;
     this.executeAliasTestOutput = 'Starte Test\r\n';
     this.executeAliasTestOutput += `> restService.runWorkflowAlias(${this.executeAliasData.controls['alias'].value}, ${method})\r\n`;
-    this.restService.runWorkflowAlias(this.executeAliasData.controls['alias'].value!, JSON.parse(this.executeAliasData.controls['payload'].value!), method).subscribe((response) => {
-      this.executeAliasTestOutput += `Ergebnis: HTTP Status ${response.status}\r\nAntwort:\r\n${JSON.stringify(response.content, null, 2)}\r\n`;
+    try {
+      this.restService.runWorkflowAlias(this.executeAliasData.controls['alias'].value!, JSON.parse(this.executeAliasData.controls['payload'].value!), method).subscribe((response) => {
+        this.executeAliasTestOutput += `Ergebnis: HTTP Status ${response.status}\r\nAntwort:\r\n${JSON.stringify(response.content, null, 2)}\r\n`;
+        this.executeAliasTestBusy = false;
+      });
+    } catch (error) {
+      this.executeAliasTestOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.executeAliasTestBusy = false;
-    });
+    }
+
   }
 
   onRunGetExecutionsTest(): void {
@@ -114,26 +120,32 @@ export class WorkflowExecutionsComponent implements OnDestroy {
     this.getExecutionsTestResult = 'Bitte warten...'
     this.getExecutionsTestOutput = 'Starte Test\r\n';
     this.getExecutionsTestOutput += `> restService.getWorkflowExecutions()\r\n`;
-    this.restService.getWorkflowExecutions().subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.getExecutionsTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.getExecutionsTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.getExecutionsTestOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.getExecutionsTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-        response = <SyshubWorkflowExecution[]>response;
-        let count = {
-          'COMPLETED': 0,
-          'EXCEPTION': 0,
-          'PENDING': 0,
-          'RUNNING': 0,
-        };
-        response.forEach((item) => count[item.status]++);
-        this.getExecutionsTestResult = `Der Server hat ${response.length} Ausführungen zurückgemeldet, davon ${count['COMPLETED']} abgeschlossen, ${count['EXCEPTION']} mit Fehler, ${count['PENDING']} warten auf Ausführung, ${count['RUNNING']} laufen noch.`;
-      }
+    try {
+      this.restService.getWorkflowExecutions().subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.getExecutionsTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.getExecutionsTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.getExecutionsTestOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.getExecutionsTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+          response = <SyshubWorkflowExecution[]>response;
+          let count = {
+            'COMPLETED': 0,
+            'EXCEPTION': 0,
+            'PENDING': 0,
+            'RUNNING': 0,
+          };
+          response.forEach((item) => count[item.status]++);
+          this.getExecutionsTestResult = `Der Server hat ${response.length} Ausführungen zurückgemeldet, davon ${count['COMPLETED']} abgeschlossen, ${count['EXCEPTION']} mit Fehler, ${count['PENDING']} warten auf Ausführung, ${count['RUNNING']} laufen noch.`;
+        }
+        this.getExecutionsTestBusy = false;
+      });
+    } catch (error) {
+      this.getExecutionsTestOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.getExecutionsTestBusy = false;
-    });
+    }
+
   }
 
   onRunGetExecutionTest(): void {
@@ -153,19 +165,25 @@ export class WorkflowExecutionsComponent implements OnDestroy {
     this.getExecutionTestResult = 'Bitte warten...'
     this.getExecutionTestOutput = 'Starte Test\r\n';
     this.getExecutionTestOutput += `> restService.getWorkflowExecution(${this.getExecutionData.controls['uuid'].value})\r\n`;
-    this.restService.getWorkflowExecution(this.getExecutionData.controls['uuid'].value!).subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.getExecutionTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.getExecutionTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.getExecutionTestOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.getExecutionTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-        response = <SyshubWorkflowExecution>response;
-        this.getExecutionTestResult = `Status: ${response.status}`;
-      }
+    try {
+      this.restService.getWorkflowExecution(this.getExecutionData.controls['uuid'].value!).subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.getExecutionTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.getExecutionTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.getExecutionTestOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.getExecutionTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+          response = <SyshubWorkflowExecution>response;
+          this.getExecutionTestResult = `Status: ${response.status}`;
+        }
+        this.getExecutionTestBusy = false;
+      });
+    } catch (error) {
+      this.getExecutionTestOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.getExecutionTestBusy = false;
-    });
+    }
+
   }
 
   onRunPostExecutionsTest(): void {
@@ -190,24 +208,30 @@ export class WorkflowExecutionsComponent implements OnDestroy {
     if (this.postData.controls.jobId.value != null && this.postData.controls.jobId.value != '')
       jobid = +(this.postData.controls.jobId.value)
     this.postTestOutput += `> restService.runWorkflowExecution(${uuid}, ${async}, ${jobid})\r\n`;
-    this.restService.runWorkflow(uuid, async, jobid).subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.postTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.postTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.postTestOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.postTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-        response = <[string, number]>response;
-        if (response[0].length > 0) {
-          this.postTestRunUuid = response[0].substring(22);
-          if (response[1] == HttpStatusCode.Accepted) {
-            this.postTestResult = `Ausführung gestartet mit Id ${this.postTestRunUuid}`;
+    try {
+      this.restService.runWorkflow(uuid, async, jobid).subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.postTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.postTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.postTestOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.postTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+          response = <[string, number]>response;
+          if (response[0].length > 0) {
+            this.postTestRunUuid = response[0].substring(22);
+            if (response[1] == HttpStatusCode.Accepted) {
+              this.postTestResult = `Ausführung gestartet mit Id ${this.postTestRunUuid}`;
+            }
           }
         }
-      }
+        this.postTestBusy = false;
+      });
+    } catch (error) {
+      this.postTestOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.postTestBusy = false;
-    });
+    }
+
   }
 
 }

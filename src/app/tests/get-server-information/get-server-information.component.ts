@@ -2,6 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { PermissionsItem, permissions } from 'src/app/perm/permissions/permissions';
+import { SharedDataService } from 'src/app/shared-data.service';
 import { environment } from 'src/environments/environment';
 import { MissingScopeError, RestService, StatusNotExpectedError } from 'syshub-rest-module';
 
@@ -25,7 +26,11 @@ export class GetServerInformationComponent implements OnDestroy {
   testServerPropsBusy: boolean = false;
   testServerPropsOutput: string = '';
 
-  constructor(private restService: RestService, private snackBar: MatSnackBar) {
+  constructor(
+    private restService: RestService,
+    private sharedService: SharedDataService,
+    private snackBar: MatSnackBar
+  ) {
     this.sub = this.restService.isLoggedIn.subscribe((state) => this.loggedin = state);
   }
 
@@ -45,17 +50,23 @@ export class GetServerInformationComponent implements OnDestroy {
     this.testServerInfoBusy = true;
     this.testServerInfoOutput = 'Starte Abruf\r\n';
     this.testServerInfoOutput += `> restService.getServerInformation()\r\n`;
-    this.restService.getServerInformation().subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.testServerInfoOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.testServerInfoOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.testServerInfoOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.testServerInfoOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-      }
-      this.testServerInfoBusy = false;
-    });
+    try {
+      this.restService.getServerInformation().subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.testServerInfoOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.testServerInfoOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.testServerInfoOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.testServerInfoOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+        }
+        this.testServerInfoBusy = false;
+      });
+    } catch (error) {
+      this.testServerPropsOutput += `> Fehler: ${(<Error>error).message}\r\n`;
+      this.testServerPropsBusy = false;
+    }
+
   }
 
   onRunTestGetServerProperties(): void {
@@ -70,17 +81,22 @@ export class GetServerInformationComponent implements OnDestroy {
     this.testServerPropsBusy = true;
     this.testServerPropsOutput = 'Starte Abruf\r\n';
     this.testServerPropsOutput += `> restService.getServerProperties()\r\n`;
-    this.restService.getServerProperties().subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.testServerPropsOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.testServerPropsOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.testServerPropsOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.testServerPropsOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-      }
+    try {
+      this.restService.getServerProperties().subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.testServerPropsOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.testServerPropsOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.testServerPropsOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.testServerPropsOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+        }
+        this.testServerPropsBusy = false;
+      });
+    } catch (error) {
+      this.testServerPropsOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.testServerPropsBusy = false;
-    });
+    }
   }
 
 }

@@ -60,17 +60,23 @@ export class LoginComponent implements OnDestroy {
     this.apikeyTestBusy = true;
     this.apikeyTestOutput = 'Starte Test API Key Authentifizierung\r\n';
     this.apikeyTestOutput += `> restService.getCurrentUser()\r\n`;
-    this.restService.getCurrentUser(true).subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.apikeyTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.apikeyTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.apikeyTestOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.apikeyTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-      }
+    try {
+      this.restService.getCurrentUser(true).subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.apikeyTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.apikeyTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.apikeyTestOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.apikeyTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+        }
+        this.apikeyTestBusy = false;
+      });
+    } catch (error) {
+      this.apikeyTestOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.apikeyTestBusy = false;
-    });
+    }
+
 
   }
 
@@ -104,17 +110,23 @@ export class LoginComponent implements OnDestroy {
     }
     else {
       this.basicLoginTestOutput += `> restService.getCurrentUser()\r\n`;
-      this.restService.getCurrentUser(true).subscribe((response) => {
-        if (response instanceof StatusNotExpectedError) {
-          this.basicLoginTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-          this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-        } else if (response instanceof Error) {
-          this.basicLoginTestOutput += `Fehler ${response.message}\r\n`;
-        } else {
-          this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-        }
+      try {
+        this.restService.getCurrentUser(true).subscribe((response) => {
+          if (response instanceof StatusNotExpectedError) {
+            this.basicLoginTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+            this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+          } else if (response instanceof Error) {
+            this.basicLoginTestOutput += `Fehler ${response.message}\r\n`;
+          } else {
+            this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+          }
+          this.basicLoginTestBusy = false;
+        });
+      } catch (error) {
+        this.basicLoginTestOutput += `> Fehler: ${(<Error>error).message}\r\n`;
         this.basicLoginTestBusy = false;
-      });
+      }
+
     }
 
   }

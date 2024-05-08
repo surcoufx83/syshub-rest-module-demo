@@ -92,17 +92,23 @@ export class BackupRestoreComponent implements OnDestroy {
     let folder = this.getBackMetaData.controls['folder'].value!.replace('\\', '/');
     this.getBackMetaOutput = 'Starte Abruf\r\n';
     this.getBackMetaOutput += `> restService.getBackupMetadata(${folder})\r\n`;
-    this.restService.getBackupMetadata(folder).subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.getBackMetaOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.getBackMetaOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.getBackMetaOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.getBackMetaOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-      }
+    try {
+      this.restService.getBackupMetadata(folder).subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.getBackMetaOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.getBackMetaOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.getBackMetaOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.getBackMetaOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+        }
+        this.getBackMetaBusy = false;
+      });
+    } catch (error) {
+      this.getBackMetaOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.getBackMetaBusy = false;
-    });
+    }
+
   }
 
   onRunServerBackup(): void {
@@ -124,17 +130,23 @@ export class BackupRestoreComponent implements OnDestroy {
     let folder = this.testBackupData.controls['folder'].value!.replace('\\', '/');
     let options = this.testBackupData.controls['options'].value!;
     this.testBackupOutput = 'Starte Backup\r\n';
-    this.restService.backupSyshub(name, description, folder, options).subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.testBackupOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.testBackupOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.testBackupOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.testBackupOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-      }
+    try {
+      this.restService.backupSyshub(name, description, folder, options).subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.testBackupOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.testBackupOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.testBackupOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.testBackupOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+        }
+        this.testBackupBusy = false;
+      });
+    } catch (error) {
+      this.testBackupOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.testBackupBusy = false;
-    });
+    }
+
   }
 
   onPrepareRestoreDialog(): void {
@@ -189,17 +201,23 @@ export class BackupRestoreComponent implements OnDestroy {
     let options = this.restoreData.controls['options'].value!;
     this.restoreOutput = 'Starte Restore\r\n';
     this.restoreOutput += `> restService.restoreSyshub(${folder}, ${options})\r\n`;
-    this.restService.restoreSyshub(folder, options).subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.restoreOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.restoreOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.restoreOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.restoreOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-      }
+    try {
+      this.restService.restoreSyshub(folder, options).subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.restoreOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.restoreOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.restoreOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.restoreOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+        }
+        this.restoreBusy = false;
+      });
+    } catch (error) {
+      this.restoreOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.restoreBusy = false;
-    });
+    }
+
   }
 
 }

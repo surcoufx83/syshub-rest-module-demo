@@ -83,18 +83,24 @@ export class ConsoleComponent implements OnDestroy {
     let cmd: string = this.genericCmdData.controls['command'].value!;
     let args: string[] = this.genericCmdData.controls['args'].value!.split('\n');
     this.genericCmdOutput += `> restService.runConsoleCommand(${cmd}, ${args})\r\n`;
-    this.restService.runConsoleCommand(cmd, args).subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.genericCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.genericCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.genericCmdOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.genericCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+    try {
+      this.restService.runConsoleCommand(cmd, args).subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.genericCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.genericCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.genericCmdOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.genericCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
 
-      }
+        }
+        this.genericCmdBusy = false;
+      });
+    } catch (error) {
+      this.genericCmdOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.genericCmdBusy = false;
-    });
+    }
+
   }
 
   onRunHelpCmd(): void {
@@ -110,23 +116,29 @@ export class ConsoleComponent implements OnDestroy {
     this.helpCmdOutput = 'Bitte warten...'
     this.helpCmdOutput = 'Starte Test\r\n';
     this.helpCmdOutput += `> restService.runConsoleCommandHelp()\r\n`;
-    this.restService.runConsoleCommandHelp().subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.helpCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.helpCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.helpCmdOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.helpCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-        const responseObj = <{ [key: string]: string }>response;
-        this.availableCommands = Object.keys(response).sort().reduce((result: { [key: string]: string }, key) => (result[key] = responseObj[key], result), {});
-        this.availableCommandKeys = Object.keys(this.availableCommands);
-        sessionStorage.setItem('commands', JSON.stringify(this.availableCommands));
-        this.filter();
-        this.helpCmdResult = `${this.availableCommandKeys.length} Kommandos erhalten`;
-      }
+    try {
+      this.restService.runConsoleCommandHelp().subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.helpCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.helpCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.helpCmdOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.helpCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+          const responseObj = <{ [key: string]: string }>response;
+          this.availableCommands = Object.keys(response).sort().reduce((result: { [key: string]: string }, key) => (result[key] = responseObj[key], result), {});
+          this.availableCommandKeys = Object.keys(this.availableCommands);
+          sessionStorage.setItem('commands', JSON.stringify(this.availableCommands));
+          this.filter();
+          this.helpCmdResult = `${this.availableCommandKeys.length} Kommandos erhalten`;
+        }
+        this.helpCmdBusy = false;
+      });
+    } catch (error) {
+      this.helpCmdOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.helpCmdBusy = false;
-    });
+    }
+
   }
 
   onRunMemCmd(): void {
@@ -142,18 +154,23 @@ export class ConsoleComponent implements OnDestroy {
     this.memCmdOutput = 'Bitte warten...'
     this.memCmdOutput = 'Starte Test\r\n';
     this.memCmdOutput += `> restService.runConsoleCommandMem()\r\n`;
-    this.restService.runConsoleCommandMem().subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.memCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.memCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.memCmdOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.memCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-
-      }
+    try {
+      this.restService.runConsoleCommandMem().subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.memCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.memCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.memCmdOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.memCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+        }
+        this.memCmdBusy = false;
+      });
+    } catch (error) {
+      this.memCmdOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.memCmdBusy = false;
-    });
+    }
+
   }
 
   onRunPCmd(): void {
@@ -169,18 +186,23 @@ export class ConsoleComponent implements OnDestroy {
     this.pCmdOutput = 'Bitte warten...'
     this.pCmdOutput = 'Starte Test\r\n';
     this.pCmdOutput += `> restService.runConsoleCommandP()\r\n`;
-    this.restService.runConsoleCommandP().subscribe((response) => {
-      if (response instanceof StatusNotExpectedError) {
-        this.pCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
-        this.pCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
-      } else if (response instanceof Error) {
-        this.pCmdOutput += `Fehler ${response.message}\r\n`;
-      } else {
-        this.pCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
-
-      }
+    try {
+      this.restService.runConsoleCommandP().subscribe((response) => {
+        if (response instanceof StatusNotExpectedError) {
+          this.pCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
+          this.pCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.pCmdOutput += `Fehler ${response.message}\r\n`;
+        } else {
+          this.pCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
+        }
+        this.pCmdBusy = false;
+      });
+    } catch (error) {
+      this.pCmdOutput += `> Fehler: ${(<Error>error).message}\r\n`;
       this.pCmdBusy = false;
-    });
+    }
+
   }
 
 }
