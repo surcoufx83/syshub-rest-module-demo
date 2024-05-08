@@ -87,6 +87,8 @@ export class ConsoleComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.genericCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.genericCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.genericCmdOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.genericCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
 
@@ -112,6 +114,8 @@ export class ConsoleComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.helpCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.helpCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.helpCmdOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.helpCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
         const responseObj = <{ [key: string]: string }>response;
@@ -142,6 +146,8 @@ export class ConsoleComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.memCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.memCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.memCmdOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.memCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
 
@@ -167,6 +173,8 @@ export class ConsoleComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.pCmdOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.pCmdOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.pCmdOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.pCmdOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
 

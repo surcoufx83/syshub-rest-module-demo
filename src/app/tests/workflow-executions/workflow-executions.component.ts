@@ -118,6 +118,8 @@ export class WorkflowExecutionsComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.getExecutionsTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.getExecutionsTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.getExecutionsTestOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.getExecutionsTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
         response = <SyshubWorkflowExecution[]>response;
@@ -155,6 +157,8 @@ export class WorkflowExecutionsComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.getExecutionTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.getExecutionTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.getExecutionTestOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.getExecutionTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
         response = <SyshubWorkflowExecution>response;
@@ -190,6 +194,8 @@ export class WorkflowExecutionsComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.postTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.postTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.postTestOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.postTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
         response = <[string, number]>response;

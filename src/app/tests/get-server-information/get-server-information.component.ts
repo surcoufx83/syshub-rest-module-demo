@@ -49,6 +49,8 @@ export class GetServerInformationComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.testServerInfoOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.testServerInfoOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.testServerInfoOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.testServerInfoOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
       }
@@ -72,6 +74,8 @@ export class GetServerInformationComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.testServerPropsOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.testServerPropsOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.testServerPropsOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.testServerPropsOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
       }

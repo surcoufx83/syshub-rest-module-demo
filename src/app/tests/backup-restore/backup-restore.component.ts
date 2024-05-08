@@ -96,6 +96,8 @@ export class BackupRestoreComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.getBackMetaOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.getBackMetaOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.getBackMetaOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.getBackMetaOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
       }
@@ -126,6 +128,8 @@ export class BackupRestoreComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.testBackupOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.testBackupOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.testBackupOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.testBackupOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
       }
@@ -189,6 +193,8 @@ export class BackupRestoreComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.restoreOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.restoreOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.restoreOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.restoreOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
       }

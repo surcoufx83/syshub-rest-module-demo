@@ -174,6 +174,8 @@ export class JobsComponent implements OnDestroy, OnInit {
       if (response instanceof StatusNotExpectedError) {
         this.addJobOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.addJobOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.addJobOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.addJobOutput += `Header:\r\n${JSON.stringify((<JobResponse>response).header, null, 2)}\r\n`;
         this.addJobOutput += `Antwort:\r\n${JSON.stringify((<JobResponse>response).content, null, 2)}\r\n`;
@@ -226,6 +228,8 @@ export class JobsComponent implements OnDestroy, OnInit {
       if (response instanceof StatusNotExpectedError) {
         this.getJobsOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.getJobsOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.getJobsOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.getJobsOutput += `Header:\r\n${JSON.stringify((<JobsResponse>response).header, null, 2)}\r\n`;
         this.getJobsOutput += `Antwort:\r\n${JSON.stringify((<JobsResponse>response).content, null, 2)}\r\n`;
@@ -277,6 +281,8 @@ export class JobsComponent implements OnDestroy, OnInit {
       if (response instanceof StatusNotExpectedError) {
         this.addFileOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.addFileOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.addFileOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.addFileOutput += `Datei wurde hochgeladen.`;
       }

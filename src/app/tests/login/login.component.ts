@@ -64,6 +64,8 @@ export class LoginComponent implements OnDestroy {
       if (response instanceof StatusNotExpectedError) {
         this.apikeyTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
         this.apikeyTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+      } else if (response instanceof Error) {
+        this.apikeyTestOutput += `Fehler ${response.message}\r\n`;
       } else {
         this.apikeyTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
       }
@@ -92,6 +94,8 @@ export class LoginComponent implements OnDestroy {
         if (response instanceof StatusNotExpectedError) {
           this.basicLoginTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
           this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.basicLoginTestOutput += `Fehler ${response.message}\r\n`;
         } else {
           this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
         }
@@ -104,6 +108,8 @@ export class LoginComponent implements OnDestroy {
         if (response instanceof StatusNotExpectedError) {
           this.basicLoginTestOutput += `Fehler ${response.response.status}: ${response.message}\r\n`;
           this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response.response, null, 2)}\r\n`;
+        } else if (response instanceof Error) {
+          this.basicLoginTestOutput += `Fehler ${response.message}\r\n`;
         } else {
           this.basicLoginTestOutput += `Antwort:\r\n${JSON.stringify(response, null, 2)}\r\n`;
         }
@@ -141,6 +147,8 @@ export class LoginComponent implements OnDestroy {
       else if (response === true) {
         this.oauthLoginTestOutput += `> Erfolgreich eingeloggt:\r\n${JSON.stringify(JSON.parse(this.oauthKeepSession ? localStorage.getItem((<OAuthRestSettings>this.env.syshub).oauth.storeKey!)! : sessionStorage.getItem((<OAuthRestSettings>this.env.syshub).oauth.storeKey!)!), null, 2)}`;
         this.oauthLoginTestBusy = false;
+      } else if (response instanceof Error) {
+        this.oauthLoginTestOutput += `Fehler ${response.message}\r\n`;
       }
       else {
         this.oauthLoginTestOutput += `> Fehler:\r\n${JSON.stringify(response, null, 2)}`;
