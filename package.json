@@ -1,6 +1,6 @@
 {
   "name": "syshub-rest-api-module-test",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open",
@@ -23,7 +23,7 @@
     "@types/uuid": "^9.0.8",
     "material-icons": "^1.13.12",
     "rxjs": "~7.8.1",
-    "syshub-rest-module": "^5.1.0",
+    "syshub-rest-module": "^5.2.0",
     "uuid": "^9.0.1",
     "zone.js": "~0.14.5"
   },
