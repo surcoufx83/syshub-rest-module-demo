@@ -58,7 +58,7 @@ export class LoginComponent implements OnDestroy {
       return;
     }
     this.apikeyTestBusy = true;
-    this.apikeyTestOutput = 'Starte Test Basic Login\r\n';
+    this.apikeyTestOutput = 'Starte Test API Key Authentifizierung\r\n';
     this.apikeyTestOutput += `> restService.getCurrentUser()\r\n`;
     this.restService.getCurrentUser(true).subscribe((response) => {
       if (response instanceof StatusNotExpectedError) {
